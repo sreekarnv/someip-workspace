@@ -80,6 +80,7 @@ libs/                 COVESA vsomeip and CommonAPI runtime sources
 projects/             Manifest-backed editable workbench projects
 services/api/         FastAPI workflow API
 services/web/         React, Vite, Tailwind, Radix web service
+.agents/skills/       Repo-local Codex skills for UI, SOME/IP runtime, and repo hygiene work
 scripts/              Setup, runtime build, generator download, and API contract scripts
 docker/               Runtime and Wireshark container definitions
 tools/generators/     Downloaded CommonAPI generator executables
@@ -87,6 +88,14 @@ build/                Generated build output
 runs/                 Per-simulation artifacts and captures
 docs/                 User and developer workflow documentation
 ```
+
+## Agent Skills
+
+Repo-local Codex skills live under `.agents/skills/`:
+
+- `frontend-design` for frontend visual design and React UI implementation.
+- `someip-runtime` for Franca, FDEPL, CommonAPI, vsomeip, SOME/IP-SD, Docker simulation, and capture debugging.
+- `repo-hygiene` for cleanup, generated artifacts, docs consistency, license boundaries, and commit readiness.
 
 ## API Contract
 

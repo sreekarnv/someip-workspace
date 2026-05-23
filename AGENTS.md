@@ -10,6 +10,7 @@ projects/                     Editable manifest-backed workbench projects
 runs/                         Per-simulation Docker configs, logs, and captures
 services/api/                 FastAPI workflow API
 services/web/                 React/Vite workbench UI
+.agents/skills/               Repo-local Codex skills for UI, SOME/IP runtime, and repo hygiene work
 scripts/                      Setup, runtime build, generator download, and OpenAPI scripts
 docker/                       Runtime image and Wireshark container definitions
 docs/                         User workflow documentation and troubleshooting guides
@@ -23,6 +24,16 @@ Do not reintroduce the removed example/process/docker product workflow. The prod
 Keep `docs/` as the detailed user/developer guide set. README should stay a concise repository overview that links into docs. When behavior changes project creation, source-vs-generated files, build blockers, generator limitations, or run inspection, update the matching docs file in the same change.
 
 The top-level Apache-2.0 license applies to original workbench code unless a file or directory says otherwise. Preserve upstream COVESA and generated CommonAPI license notices.
+
+## Available Repo Skills
+
+Use repo-local skills under `.agents/skills/` when a request matches their scope:
+
+- `frontend-design`: frontend visual design and React UI implementation.
+- `someip-runtime`: Franca `.fidl`, deployment `.fdepl`, CommonAPI generation, raw-vsomeip nodes, Docker simulations, SOME/IP-SD, Wireshark captures, and runtime debugging.
+- `repo-hygiene`: cleanup, generated artifacts, `.gitignore`, docs consistency, license boundaries, and commit readiness.
+
+Skills guide project-specific judgment. They do not replace the typed `/api/v1` contract, project docs, or verification commands.
 
 ## Setup And Startup
 
