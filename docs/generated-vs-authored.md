@@ -8,7 +8,7 @@ These files are the source of truth. They are created by a preset, imported with
 
 | Path | Meaning |
 |------|---------|
-| `projects/<project-id>/project.yaml` | Project manifest, topology, scenario list, optional fallback metadata |
+| `projects/<project-id>/project.yaml` | Project manifest, topology, and scenario list |
 | `projects/<project-id>/franca/*.fidl` | Franca interface source |
 | `projects/<project-id>/franca/*.fdepl` | SOME/IP deployment source |
 | `projects/<project-id>/scenarios/*.yaml` | Saved scenario source |
@@ -23,7 +23,8 @@ Generated files are produced from authored source.
 | Path | Meaning |
 |------|---------|
 | `projects/<project-id>/generated/interface-index.json` | Interface and deployment summary created by validation |
-| `projects/<project-id>/generated/` | Generator metadata and generated artifacts |
+| `projects/<project-id>/generated/commonapi/` | CommonAPI/SOME-IP generator output where available |
+| `projects/<project-id>/generated/nodes/vsomeip/` | Generated raw-vsomeip service/client node source |
 | `build/projects/<project-id>/` | Compiled generated project node binaries |
 
 Generated files can be recreated. Do not edit them as the main source of truth.
@@ -44,35 +45,28 @@ Runtime files are evidence. They are useful for debugging but should not be edit
 
 ## What Validation Does
 
-Validation reads:
-
-- `project.yaml`
-- Manifest-listed `.fidl` files
-- Manifest-listed `.fdepl` files
-
-Validation writes:
-
-- Diagnostics in project metadata
-- `generated/interface-index.json`
+Validation reads `project.yaml` and the manifest-listed `.fidl` and `.fdepl` files. It writes diagnostics in metadata and `generated/interface-index.json`.
 
 Validation does not create missing `.fidl` or `.fdepl` files.
 
 ## What Generation Does
 
-Generation runs the CommonAPI generator path from the Franca and deployment source.
+Generation runs the CommonAPI generator path from the Franca and deployment source. It also writes a generated raw-vsomeip node project so the workbench can build runnable protocol simulation nodes even when full CommonAPI Core output is unavailable.
 
 Current limitation: the bundled Core generator path can report `transport-only`. That means SOME/IP transport artifacts, raw-vsomeip node sources, and metadata may exist, but complete Core proxy/stub headers for full CommonAPI node projects are not available yet.
 
-In `transport-only` state:
-
-- Interface/deployment summaries can still be useful.
-- Docker runs can still work for runnable sample-backed projects such as DoorControl.
-- Source-only projects can build and run generated raw-vsomeip nodes for protocol traffic.
-
 ## What Build Does
 
-Build attempts to create runnable node artifacts.
+Build compiles generated raw-vsomeip node sources under:
 
-For `source_example: DoorControl`, build uses `examples/DoorControl`.
+```text
+projects/<project-id>/generated/nodes/vsomeip
+```
 
-For `source_example: null`, build uses generated raw-vsomeip node sources under `projects/<project-id>/generated/nodes/vsomeip`.
+The resulting binaries are written under:
+
+```text
+build/projects/<project-id>/
+```
+
+Docker simulation uses those binaries through `docker/Dockerfile.project`.

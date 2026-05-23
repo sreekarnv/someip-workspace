@@ -98,12 +98,10 @@ export function ProjectsPage() {
 
   async function create(values: NewProjectValues) {
     try {
-      const selectedPreset = presets.find((preset) => preset.id === values.seed);
       const detail = await createProject({
         project_id: values.project_id,
         name: values.name,
         preset_id: values.seed,
-        source_example: selectedPreset?.source_example ?? null,
       }).unwrap();
       navigate(`/projects/${detail.id}`);
     } catch (reason) {
@@ -144,8 +142,8 @@ export function ProjectsPage() {
             <DialogContent>
               <DialogTitle>New project</DialogTitle>
               <DialogDescription>
-                Start from generic Franca files, a source-only vehicle contract,
-                or a runnable sample-backed simulation.
+                Start from generic Franca files or a vehicle contract that
+                generates runnable SOME/IP transport nodes.
               </DialogDescription>
               <form
                 className="grid gap-4"
@@ -192,7 +190,7 @@ export function ProjectsPage() {
                           {presets.map((preset) => (
                             <SelectItem value={preset.id} key={preset.id}>
                               {preset.name}
-                              {preset.runnable ? " sample" : " files"}
+                              {preset.runtime_kind ? " generated" : " files"}
                             </SelectItem>
                           ))}
                         </SelectContent>

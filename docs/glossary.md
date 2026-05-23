@@ -1,56 +1,58 @@
 # Glossary
 
+Short definitions for terms used by the workbench.
+
 ## Franca
 
-The interface definition language used by the CommonAPI toolchain.
+The interface definition language used by the CommonAPI toolchain. Franca describes service contracts independently from a transport binding.
 
 ## FIDL
 
-A Franca IDL file. It defines packages, interfaces, methods, broadcasts/events, structs, and enumerations. In this workspace these files live under `projects/<project-id>/franca/`.
+A Franca interface file, usually ending in `.fidl`. It defines packages, interfaces, versions, methods, broadcasts/events, structs, arrays, and enumerations.
 
 ## FDEPL
 
-A Franca deployment file. It maps the Franca interface to SOME/IP deployment values such as service ID, instance ID, method IDs, event IDs, event groups, and ports.
+A Franca deployment file, usually ending in `.fdepl`. In this workbench it assigns SOME/IP deployment details such as service IDs, instance IDs, method IDs, event IDs, and event groups.
 
 ## CommonAPI
 
-A COVESA middleware abstraction and generator stack. It generates proxy/stub style application glue from Franca source and can bind that interface to SOME/IP.
+A COVESA middleware abstraction and code generation stack. The workbench uses CommonAPI generators where available, but currently uses generated raw-vsomeip nodes for runnable transport simulation when complete Core proxy/stub output is unavailable.
 
 ## vsomeip
 
-The COVESA SOME/IP runtime used for transport, routing, and SOME/IP Service Discovery behavior.
+The COVESA SOME/IP runtime used by generated service/client nodes. It handles SOME/IP messaging, routing, and SOME/IP-SD participation.
 
 ## SOME/IP
 
-Scalable service-Oriented MiddlewarE over IP. It is used for service method calls, events, and field-like communication over IP networks.
+Scalable service-Oriented MiddlewarE over IP. It is the automotive service communication protocol simulated by this workbench.
 
 ## SOME/IP-SD
 
-SOME/IP Service Discovery. It lets clients find offered services, subscribe to event groups, and observe service availability.
+SOME/IP Service Discovery. It advertises and discovers service instances, events, and subscriptions over the run network.
 
 ## Service ID
 
-A SOME/IP identifier for a service. In this workspace it should be declared in the `.fdepl` file.
+A SOME/IP identifier for an interface/service. It is configured in `.fdepl` as `SomeIpServiceID`.
 
 ## Instance ID
 
-A SOME/IP identifier for a specific service instance. It is also declared in deployment source.
+A SOME/IP identifier for a concrete instance of a service. It is configured in `.fdepl` as `SomeIpInstanceID`.
 
 ## Method ID
 
-A SOME/IP identifier for an interface method.
+A SOME/IP identifier for a method on a service. It is configured in `.fdepl` as `SomeIpMethodID`.
 
 ## Event ID
 
-A SOME/IP identifier for a broadcast or event.
+A SOME/IP identifier for an event or broadcast. It is configured in `.fdepl` as `SomeIpEventID`.
 
 ## Event Group
 
-A SOME/IP-SD subscription group that contains one or more events.
+A SOME/IP-SD subscription grouping for events. It is configured in `.fdepl` as `SomeIpEventGroups`.
 
-## Node
+## Project
 
-A simulated participant in a project topology. Nodes are listed in `project.yaml` and usually act as service or client applications.
+A manifest-backed workbench directory under `projects/<project-id>/`. It owns editable source, topology, nodes, and scenarios.
 
 ## Scenario
 
@@ -64,9 +66,9 @@ One execution of a scenario. A run has its own rendered Docker Compose file, per
 
 A saved packet capture, usually `.pcapng`, produced during a run for Wireshark inspection.
 
-## `source_example`
+## Runtime Kind
 
-A manifest field that points at a checked-in C++ sample implementation under `examples/`. `null` means the project uses generated project nodes instead of fallback implementation code.
+The strategy used to run a project. The current v1 runtime kind is `generated-vsomeip`, which builds generated transport-level service/client nodes from project Franca and deployment source.
 
 ## `transport-only`
 

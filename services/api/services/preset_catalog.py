@@ -4,26 +4,27 @@ import re
 from typing import Any, Dict, List, Optional
 
 
-EXAMPLE_CATALOG: List[Dict[str, Any]] = [
+PRESET_CATALOG: List[Dict[str, Any]] = [
     {
         "id": "starter",
         "name": "Starter",
-        "description": "Generic authoring project for a minimal Franca ping service.",
+        "description": "Generic project for a minimal Franca ping service and generated SOME/IP transport nodes.",
         "category": "authoring",
-        "runnable": False,
-        "source_example": None,
+        "runnable": True,
+        "runtime_kind": "generated-vsomeip",
         "default_project_id": "sample-lab",
         "default_name": "Sample Lab",
     },
     {
         "id": "door-control",
         "name": "Door Control",
-        "description": "Sample-backed door lock and status SOME/IP service.",
+        "description": "Door lock and status SOME/IP project generated from canonical project source.",
         "category": "vehicle-body",
         "runnable": True,
-        "source_example": "DoorControl",
+        "runtime_kind": "generated-vsomeip",
         "default_project_id": "door-control",
         "default_name": "Door Control",
+        "source_project": "door-control",
         "interface": "v1.vehicle.doors.DoorControl",
         "nodes": [
             {"id": "door-service", "type": "service", "app_name": "door-control-service"},
@@ -33,34 +34,16 @@ EXAMPLE_CATALOG: List[Dict[str, Any]] = [
             "id": "basic-lock-flow",
             "name": "Basic Lock Flow",
             "file": "scenarios/basic-lock-flow.yaml",
-            "content": """id: basic-lock-flow
-name: Basic Lock Flow
-steps:
-  - start: door-service
-  - wait_for:
-      service: v1.vehicle.doors.DoorControl
-      timeout_ms: 5000
-  - start: door-client
-  - call:
-      node: door-client
-      method: unlockDoor
-      args:
-        door: FRONT_LEFT
-  - assert:
-      response:
-        success: true
-  - capture_mark:
-      label: unlock-complete
-""",
+            "source_file": "scenarios/basic-lock-flow.yaml",
         },
     },
     {
         "id": "climate-control",
         "name": "Climate Control",
-        "description": "Franca/deployment authoring sample for HVAC temperature, fan level, status, and SOME/IP event IDs.",
+        "description": "HVAC temperature, fan level, status, and SOME/IP event ID project generated from Franca source.",
         "category": "vehicle-body",
-        "runnable": False,
-        "source_example": None,
+        "runnable": True,
+        "runtime_kind": "generated-vsomeip",
         "default_project_id": "climate-control",
         "default_name": "Climate Control",
         "franca": {
@@ -109,7 +92,7 @@ steps:
 
 
 def all_presets() -> List[Dict[str, Any]]:
-    return [dict(item) for item in EXAMPLE_CATALOG]
+    return [dict(item) for item in PRESET_CATALOG]
 
 
 def public_presets() -> List[Dict[str, Any]]:
@@ -120,28 +103,19 @@ def public_presets() -> List[Dict[str, Any]]:
             "description": item.get("description"),
             "category": item.get("category", "sample"),
             "runnable": bool(item.get("runnable")),
-            "source_example": item.get("source_example"),
+            "runtime_kind": item.get("runtime_kind", "generated-vsomeip"),
             "default_project_id": item.get("default_project_id"),
             "default_name": item.get("default_name"),
         }
-        for item in EXAMPLE_CATALOG
+        for item in PRESET_CATALOG
     ]
 
 
 def by_id(preset_id: Optional[str]) -> Optional[Dict[str, Any]]:
     if preset_id is None:
-        return next(item for item in EXAMPLE_CATALOG if item["id"] == "starter")
-    for item in EXAMPLE_CATALOG:
+        return next(item for item in PRESET_CATALOG if item["id"] == "starter")
+    for item in PRESET_CATALOG:
         if item["id"] == preset_id:
-            return item
-    return None
-
-
-def by_source_example(source_example: Optional[str]) -> Optional[Dict[str, Any]]:
-    if source_example is None:
-        return by_id("starter")
-    for item in EXAMPLE_CATALOG:
-        if item.get("source_example") == source_example:
             return item
     return None
 

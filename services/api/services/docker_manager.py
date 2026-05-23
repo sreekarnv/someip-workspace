@@ -1,11 +1,30 @@
 import asyncio
 import json
+import shutil
 import subprocess
 from pathlib import Path
 from typing import Dict, List
 
 WORKSPACE = Path(__file__).resolve().parent.parent.parent.parent
 WIRESHARK_COMPOSE = WORKSPACE / "docker" / "wireshark-compose.yml"
+
+
+def docker_ready() -> Dict:
+    if not shutil.which("docker"):
+        return {"ready": False, "detail": "docker command not found"}
+    try:
+        result = subprocess.run(
+            ["docker", "info", "--format", "{{.ServerVersion}}"],
+            capture_output=True,
+            text=True,
+            timeout=4,
+        )
+    except Exception as exc:
+        return {"ready": False, "detail": str(exc)}
+    return {
+        "ready": result.returncode == 0,
+        "detail": result.stdout.strip() if result.returncode == 0 else (result.stderr.strip() or "docker daemon unavailable"),
+    }
 
 
 async def run_cmd(cmd: List[str], log_callback=None) -> tuple[bool, str]:

@@ -55,13 +55,8 @@ runs/
 *.tmp
 *.bak
 
-# Generated artifacts. Source-only projects regenerate raw-vsomeip nodes under
-# projects/<project-id>/generated/ during Generate. Keep the DoorControl fallback
-# artifacts that a clean checkout cannot reproduce with the bundled transport-only
-# generator output.
-examples/*/gen/
-!examples/DoorControl/gen/
-!examples/DoorControl/gen/**
+# Generated project artifacts. Projects regenerate raw-vsomeip nodes under
+# projects/<project-id>/generated/ during Generate.
 projects/*/generated/
 
 # vsomeip runtime sockets

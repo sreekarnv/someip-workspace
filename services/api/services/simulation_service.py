@@ -135,10 +135,30 @@ def render_vsomeip_configs(project_id: str, run_id: str) -> Dict[str, Path]:
     return configs
 
 
+def _default_binary_prefix(project_id: str) -> str:
+    return project_id.replace("-", "_")
+
+
+def project_binary_paths(project_id: str) -> Dict[str, Path]:
+    metadata = project_service.load_metadata(project_id).get("generated_nodes", {})
+    prefix = _default_binary_prefix(project_id)
+    service_binary = metadata.get("service_binary", f"{prefix}_service")
+    client_binary = metadata.get("client_binary", f"{prefix}_client")
+    build_dir = project_service.WORKSPACE / "build" / "projects" / project_id
+    return {
+        "service": build_dir / service_binary,
+        "client": build_dir / client_binary,
+    }
+
+
+def project_binaries_ready(project_id: str) -> bool:
+    paths = project_binary_paths(project_id)
+    return all(path.exists() and path.is_file() for path in paths.values())
+
+
 def _compose(project_id: str, run_id: str) -> Dict[str, Any]:
     manifest = project_service.load_manifest(project_id)
     metadata = project_service.load_metadata(project_id)
-    source_example = manifest.get("source_example")
     generated_nodes = metadata.get("generated_nodes", {})
     network_name = f"someip-run-{run_id[:8]}"
     services = {}
@@ -147,28 +167,19 @@ def _compose(project_id: str, run_id: str) -> Dict[str, Any]:
         for node in manifest.get("nodes", [])
         if _node_role(node) == "service"
     ]
+    prefix = _default_binary_prefix(project_id)
+    environment = {
+        "PROJECT_NAME": project_id,
+        "SERVICE_BINARY": generated_nodes.get("service_binary", f"{prefix}_service"),
+        "CLIENT_BINARY": generated_nodes.get("client_binary", f"{prefix}_client"),
+    }
+    build = {
+        "context": "../..",
+        "dockerfile": "docker/Dockerfile.project",
+        "args": {"PROJECT_ID": project_id},
+    }
     for node in manifest.get("nodes", []):
         role = _node_role(node)
-        if source_example:
-            build = {
-                "context": "../..",
-                "dockerfile": "docker/Dockerfile.example",
-                "args": {"EXAMPLE_NAME": source_example},
-            }
-            environment = {
-                "EXAMPLE_NAME": source_example,
-            }
-        else:
-            build = {
-                "context": "../..",
-                "dockerfile": "docker/Dockerfile.project",
-                "args": {"PROJECT_ID": project_id},
-            }
-            environment = {
-                "EXAMPLE_NAME": project_id,
-                "SERVICE_BINARY": generated_nodes.get("service_binary", f"{project_id.replace('-', '_')}_service"),
-                "CLIENT_BINARY": generated_nodes.get("client_binary", f"{project_id.replace('-', '_')}_client"),
-            }
         service = {
             "build": build,
             "container_name": f"{run_id[:8]}-{node['id']}",
@@ -192,7 +203,6 @@ def _compose(project_id: str, run_id: str) -> Dict[str, Any]:
         "networks": {network_name: {"driver": "bridge"}},
     }
 
-
 def _compose_path(run_id: str) -> Path:
     return _run_dir(run_id) / "compose.yaml"
 
@@ -215,6 +225,11 @@ async def create_run(project_id: str, scenario_id: str) -> Dict[str, Any]:
         == "ready"
     ):
         raise ValueError("Build the project before starting a run")
+    if not project_binaries_ready(project_id):
+        raise ValueError("Project build artifacts are missing. Run Build nodes again before simulation.")
+    docker_state = docker_manager.docker_ready()
+    if not docker_state["ready"]:
+        raise ValueError(f"Docker is not ready: {docker_state['detail']}")
     if not manifest.get("nodes"):
         raise ValueError("Project has no runnable nodes")
     scenario = _scenario(project_id, scenario_id)

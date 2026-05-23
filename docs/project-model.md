@@ -37,7 +37,6 @@ runs/<run-id>/
 - Node ids, node roles, interfaces, and vsomeip application names.
 - Network settings such as service discovery multicast and SD port.
 - Scenario ids and scenario file paths.
-- Optional `source_example` fallback metadata.
 
 The manifest does not own the interface shape. The `.fidl` file owns that.
 
@@ -52,7 +51,7 @@ The manifest does not own the interface shape. The `.fidl` file owns that.
 - Broadcasts/events.
 - Structs and enumerations.
 
-Use Franca types such as `Boolean`, `String`, `UInt8`, `Int16`, and so on. Avoid using `state` as an identifier because it is reserved in Franca.
+Use Franca types such as `Boolean`, `String`, `UInt8`, and `Int16`. Avoid using `state` as an identifier because it is reserved in Franca.
 
 ## Deployment Source
 
@@ -73,22 +72,12 @@ The UI inspector reads these values through the backend indexer. Docker and UI c
 
 Some scenario actions, such as Franca method calls and event assertions, are limited until generated scenario-driver code exists. The run inspection UI reports this limitation.
 
-## `source_example`
-
-`source_example` controls whether the project has a checked-in C++ fallback implementation.
-
-| Value | Meaning |
-|-------|---------|
-| `null` | No fallback C++ implementation. Build/run use generated project nodes after Generate and Build. |
-| `DoorControl` | Build and Docker run use `examples/DoorControl`. |
-
-Do not set `source_example` just because a project has Franca files. It should only point at a real directory under `examples/` that contains buildable service/client code. Source-only projects should leave it `null`.
-
 ## Generated Project Metadata
 
 `projects/<project-id>/generated/` is derived output. Important files include:
 
 - `interface-index.json`: created by validation from `.fidl` and `.fdepl` files.
+- `nodes/vsomeip/`: generated raw-vsomeip node source used for transport simulation.
 - Generator metadata and output status.
 
 You can delete and recreate generated output. Do not treat it as the source of truth.

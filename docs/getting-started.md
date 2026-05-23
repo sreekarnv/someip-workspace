@@ -63,7 +63,7 @@ Open:
 
 ## First Successful Flow: DoorControl
 
-Use DoorControl first because it is the current runnable sample-backed project.
+Use DoorControl first because it is a complete project preset with Franca, deployment, topology, and a saved scenario.
 
 1. Open `http://localhost:5173/projects`.
 2. If `door-control` already exists, open it. If not, click **New project** and choose **Door Control**.

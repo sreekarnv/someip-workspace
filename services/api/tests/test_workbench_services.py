@@ -40,15 +40,46 @@ class WorkbenchServiceTests(unittest.TestCase):
         )
 
 
-    def test_project_collection_lists_source_only_climate_preset(self):
+    def test_project_collection_lists_generated_runtime_presets(self):
         collection = workflow_service.project_collection()
         presets = {preset["id"]: preset for preset in collection["presets"]}
 
         self.assertEqual(
             sorted(presets), ["climate-control", "door-control", "starter"]
         )
-        self.assertFalse(presets["climate-control"]["runnable"])
-        self.assertIsNone(presets["climate-control"]["source_example"])
+        self.assertTrue(presets["door-control"]["runnable"])
+        self.assertEqual(presets["door-control"]["runtime_kind"], "generated-vsomeip")
+        self.assertNotIn("source_example", presets["door-control"])
+
+    def test_door_control_preset_seeds_project_native_source(self):
+        detail = project_service.create_project(
+            "door-lab", "Door Lab", preset_id="door-control"
+        )
+        manifest = detail["manifest"]
+
+        self.assertEqual(
+            manifest["franca"],
+            {
+                "fidl": ["franca/DoorControl.fidl"],
+                "deployment": ["franca/DoorControl.fdepl"],
+            },
+        )
+        self.assertEqual(
+            [node["id"] for node in manifest["nodes"]],
+            ["door-service", "door-client"],
+        )
+        self.assertEqual(
+            manifest["nodes"][0]["interface"],
+            "v1.vehicle.doors.DoorControl",
+        )
+        self.assertEqual(
+            manifest["scenarios"],
+            [{"id": "basic-lock-flow", "file": "scenarios/basic-lock-flow.yaml"}],
+        )
+        scenario = project_service.read_document(
+            "door-lab", "scenarios/basic-lock-flow.yaml"
+        )
+        self.assertIn("unlockDoor", scenario["content"])
 
     def test_climate_control_preset_seeds_manifest_documents_and_scenario(self):
         detail = project_service.create_project(
@@ -56,7 +87,6 @@ class WorkbenchServiceTests(unittest.TestCase):
         )
         manifest = detail["manifest"]
 
-        self.assertIsNone(manifest["source_example"])
         self.assertEqual(
             manifest["franca"],
             {

@@ -1,6 +1,5 @@
 id: climate-control
 name: Climate Control
-source_example: null
 franca:
   fidl:
   - franca/ClimateControl.fidl

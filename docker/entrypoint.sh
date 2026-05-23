@@ -2,9 +2,9 @@
 set -e
 
 PROCESS_TYPE=${PROCESS_TYPE:-service}
-EXAMPLE_NAME=${EXAMPLE_NAME:-DoorControl}
+PROJECT_NAME=${PROJECT_NAME:-someip_project}
 
-snake_name=$(echo "$EXAMPLE_NAME" | sed -r 's/([A-Z])/_\1/g' | tr '[:upper:]' '[:lower:]' | sed 's/^_//')
+snake_name=$(echo "$PROJECT_NAME" | sed -r 's/([A-Z])/_\1/g' | tr '[:upper:]' '[:lower:]' | sed 's/^_//')
 
 resolve_ip() {
     local host="$1"

@@ -1,6 +1,6 @@
 # Project Creation
 
-Project creation is where most confusion happens. The key rule is simple: creating a project should write the editable source files. Validation and generation happen later.
+Project creation writes editable source files. Validation and generation happen later.
 
 ## UI Steps
 
@@ -14,46 +14,35 @@ Project creation is where most confusion happens. The key rule is simple: creati
 
 The project is created under `projects/<project-id>/`.
 
-## Preset Types
+## Presets
 
-| Preset | Type | What it creates | Runtime fallback |
-|--------|------|-----------------|------------------|
-| Starter | Source-only generic project | Minimal `.fidl`, `.fdepl`, `project.yaml`, nodes, scenario YAML, and generated raw-vsomeip nodes after generation | None |
-| Climate Control | Source-only vehicle body contract | Climate `.fidl`, `.fdepl`, manifest nodes, `comfort-flow` scenario YAML, and generated raw-vsomeip nodes after generation | None |
-| Door Control | Runnable sample-backed project | Door `.fidl`, `.fdepl`, manifest nodes, scenario YAML, and `source_example: DoorControl` | `examples/DoorControl` |
+| Preset | What it creates | Runtime kind |
+|--------|-----------------|--------------|
+| Starter | Minimal `.fidl`, `.fdepl`, `project.yaml`, nodes, and smoke scenario YAML | Generated raw-vsomeip |
+| Door Control | Door `.fidl`, `.fdepl`, manifest nodes, and `basic-lock-flow` scenario YAML | Generated raw-vsomeip |
+| Climate Control | Climate `.fidl`, `.fdepl`, manifest nodes, and `comfort-flow` scenario YAML | Generated raw-vsomeip |
 
-## Source-Only Projects
+A preset does not provide handwritten service/client fallback code. Build and simulation use generated project nodes for every preset.
 
-Source-only projects start from valid project source and do not include checked-in C++ service/client fallback binaries. During generation, the workbench creates derived raw-vsomeip service/client sources so Docker can still produce SOME/IP and SOME/IP-SD traffic while full CommonAPI Core output is unavailable.
+## What Gets Written
 
-A source-only project can usually:
+When you create a project from a preset, these files should exist immediately:
 
-- Show documents in Author.
-- Validate Franca and deployment source.
-- Produce `generated/interface-index.json`.
-- Run the generator path as far as the current toolchain supports.
-- Build generated raw-vsomeip service/client binaries.
-- Run Docker simulations that produce SOME/IP and SOME/IP-SD traffic.
-
-Generated raw-vsomeip nodes are protocol simulation nodes. They do not provide complete CommonAPI proxy/stub behavior or full Franca scenario-driver semantics yet.
-
-## Runnable Sample-Backed Projects
-
-Runnable sample-backed projects use checked-in C++ code while the fully generated node path is incomplete.
-
-DoorControl is currently the supported runnable sample. Its manifest has:
-
-```yaml
-source_example: DoorControl
+```text
+projects/<project-id>/
+  project.yaml
+  franca/
+    <Interface>.fidl
+    <Interface>.fdepl
+  scenarios/
+    <scenario>.yaml
+  nodes/
+  generated/
 ```
 
-That tells the build and Docker path to use `examples/DoorControl` for service/client binaries.
+The `.fidl` and `.fdepl` documents are seeded source. They are not produced by validation.
 
-## Important: FIDL And FDEPL Are Seeded, Not Validation-Generated
-
-When you create a project from a preset, the `.fidl` and `.fdepl` documents should be written immediately under `projects/<project-id>/franca/` and referenced by `project.yaml`.
-
-Validation does not create missing `.fidl` or `.fdepl` files. Validation reads the manifest, opens the listed documents, checks them, and writes derived metadata such as:
+Validation reads the manifest, opens the listed documents, checks them, and writes derived metadata such as:
 
 ```text
 projects/<project-id>/generated/interface-index.json
@@ -61,29 +50,20 @@ projects/<project-id>/generated/interface-index.json
 
 If the inspector says `Project has no .fidl document` or `Project has no .fdepl document`, inspect `project.yaml` first. The `franca.fidl` and `franca.deployment` lists must point at real files.
 
-## Expected Source-Only ClimateControl Shape
+## Generated Runtime
 
-A source-only Climate Control project should look like this:
+After validation, generation creates transport artifacts and a generated raw-vsomeip node project under:
 
 ```text
-projects/climate-control/
-  project.yaml
-  franca/
-    ClimateControl.fidl
-    ClimateControl.fdepl
-  scenarios/
-    comfort-flow.yaml
-  nodes/
-  generated/
+projects/<project-id>/generated/nodes/vsomeip/
 ```
 
-Its manifest should have `source_example: null` and should reference the Franca files:
+Build compiles those nodes into:
 
-```yaml
-source_example: null
-franca:
-  fidl:
-    - franca/ClimateControl.fidl
-  deployment:
-    - franca/ClimateControl.fdepl
+```text
+build/projects/<project-id>/
 ```
+
+Simulation then runs those binaries through `docker/Dockerfile.project`.
+
+Generated raw-vsomeip nodes are protocol simulation nodes. They do not provide complete CommonAPI proxy/stub behavior or full Franca scenario-driver semantics yet.

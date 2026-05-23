@@ -1,6 +1,6 @@
 # Workbench Workflow
 
-The workbench is organized around project routes. Build and run operations are scoped to a project, not global examples.
+The workbench is organized around project routes. Build and run operations are scoped to a project, not global examples or fallback samples.
 
 ## Routes
 
@@ -48,9 +48,7 @@ The build page separates three gates:
 2. Generate CommonAPI/SOME-IP artifacts.
 3. Build runnable nodes.
 
-For source-only projects, generation creates a raw-vsomeip node project when full CommonAPI Core proxy/stub output is unavailable.
-
-For DoorControl, build can use `examples/DoorControl` through `source_example: DoorControl`.
+Generation creates a raw-vsomeip node project when full CommonAPI Core proxy/stub output is unavailable. Build compiles that generated project for every preset, including DoorControl and ClimateControl.
 
 ## Simulate
 
@@ -64,7 +62,7 @@ This page shows:
 - Scenario YAML.
 - Recent project runs.
 
-If a project has no runnable node artifacts, start will be blocked. For source-only projects, run Generate and Build so the raw-vsomeip nodes are compiled first.
+If a project has no runnable node artifacts, start will be blocked. Run Generate and Build so the raw-vsomeip nodes are compiled first.
 
 ## Run Inspection
 
@@ -84,5 +82,5 @@ Wireshark remains the deep packet inspection tool. The workbench provides captur
 |---------|---------|------------|
 | Validation failed | Franca or deployment source is missing or invalid | Fix source in Author and validate again |
 | Generation is `transport-only` | The current generator path lacks complete Core proxy/stub output | Continue only if the workflow allows it; read the warning |
-| No generated node artifacts | Project is source-only but generation/build has not produced binaries | Run Generate and Build, then retry simulation |
+| No generated node artifacts | Generation/build has not produced project binaries | Run Generate and Build, then retry simulation |
 | Run blocked before simulation | Validation/build/run prerequisites are not met | Open Simulate and read blockers |

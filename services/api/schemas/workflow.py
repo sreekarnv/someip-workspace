@@ -37,6 +37,7 @@ class WiresharkRuntime(BaseModel):
 class RuntimeReadiness(BaseModel):
     api: RuntimeItem
     docker: RuntimeItem
+    vsomeip: RuntimeItem
     wireshark: WiresharkRuntime
     generators: Dict[str, GeneratorRuntime]
 
@@ -91,10 +92,10 @@ class WorkbenchOverview(BaseModel):
 class StarterPreset(BaseModel):
     id: str
     name: str
-    source_example: Optional[str] = None
     description: Optional[str] = None
     category: str = "sample"
     runnable: bool = False
+    runtime_kind: Literal["generated-vsomeip"] = "generated-vsomeip"
     default_project_id: Optional[str] = None
     default_name: Optional[str] = None
 
@@ -108,7 +109,6 @@ class ProjectCreateRequest(BaseModel):
     project_id: str
     name: str
     preset_id: Optional[str] = None
-    source_example: Optional[str] = None
 
 
 class ProjectImportRequest(BaseModel):
@@ -206,7 +206,7 @@ class RecommendedAction(BaseModel):
 class ProjectOverview(BaseModel):
     id: str
     name: str
-    source_example: Optional[str] = None
+    runtime_kind: Literal["generated-vsomeip"] = "generated-vsomeip"
     status: ProjectStatus
     readiness: int
     readiness_gates: List[ReadinessGate] = Field(default_factory=list)

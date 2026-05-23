@@ -287,6 +287,7 @@ export type GeneratorRuntime = {
 export type RuntimeReadiness = {
   api: RuntimeItem;
   docker: RuntimeItem;
+  vsomeip: RuntimeItem;
   wireshark: WiresharkRuntime;
   generators: {
     [key: string]: GeneratorRuntime;
@@ -301,10 +302,10 @@ export type WorkbenchOverview = {
 export type StarterPreset = {
   id: string;
   name: string;
-  source_example?: string | null;
   description?: string | null;
   category?: string;
   runnable?: boolean;
+  runtime_kind?: "generated-vsomeip";
   default_project_id?: string | null;
   default_name?: string | null;
 };
@@ -363,7 +364,7 @@ export type DocumentRef = {
 export type ProjectOverview = {
   id: string;
   name: string;
-  source_example?: string | null;
+  runtime_kind?: "generated-vsomeip";
   status: ProjectStatus;
   readiness: number;
   readiness_gates?: ReadinessGate[];
@@ -392,7 +393,6 @@ export type ProjectCreateRequest = {
   project_id: string;
   name: string;
   preset_id?: string | null;
-  source_example?: string | null;
 };
 export type ProjectImportRequest = {
   source_path: string;

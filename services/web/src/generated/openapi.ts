@@ -591,8 +591,6 @@ export interface components {
             name: string;
             /** Preset Id */
             preset_id?: string | null;
-            /** Source Example */
-            source_example?: string | null;
         };
         /** ProjectImportRequest */
         ProjectImportRequest: {
@@ -605,8 +603,12 @@ export interface components {
             id: string;
             /** Name */
             name: string;
-            /** Source Example */
-            source_example?: string | null;
+            /**
+             * Runtime Kind
+             * @default generated-vsomeip
+             * @constant
+             */
+            runtime_kind: "generated-vsomeip";
             status: components["schemas"]["ProjectStatus"];
             /** Readiness */
             readiness: number;
@@ -802,6 +804,7 @@ export interface components {
         RuntimeReadiness: {
             api: components["schemas"]["RuntimeItem"];
             docker: components["schemas"]["RuntimeItem"];
+            vsomeip: components["schemas"]["RuntimeItem"];
             wireshark: components["schemas"]["WiresharkRuntime"];
             /** Generators */
             generators: {
@@ -854,8 +857,6 @@ export interface components {
             id: string;
             /** Name */
             name: string;
-            /** Source Example */
-            source_example?: string | null;
             /** Description */
             description?: string | null;
             /**
@@ -868,6 +869,12 @@ export interface components {
              * @default false
              */
             runnable: boolean;
+            /**
+             * Runtime Kind
+             * @default generated-vsomeip
+             * @constant
+             */
+            runtime_kind: "generated-vsomeip";
             /** Default Project Id */
             default_project_id?: string | null;
             /** Default Name */

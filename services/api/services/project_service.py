@@ -7,7 +7,7 @@ from typing import Any, Dict, List
 
 import yaml
 
-from services import example_catalog
+from services import preset_catalog
 
 WORKSPACE = Path(__file__).resolve().parent.parent.parent.parent
 PROJECTS_DIR = WORKSPACE / "projects"
@@ -222,17 +222,12 @@ def list_projects() -> List[Dict[str, Any]]:
     return projects
 
 
-def _franca_files_from_example(
-    source_example: str, project_root: Path
+def _franca_files_from_source_project(
+    source_project: str, project_root: Path
 ) -> Dict[str, List[str]]:
-    canonical = WORKSPACE / "projects" / common_project_id(source_example) / "franca"
-    source = (
-        canonical
-        if canonical.exists()
-        else WORKSPACE / "examples" / source_example / "fidl"
-    )
+    source = WORKSPACE / "projects" / source_project / "franca"
     if not source.exists():
-        raise FileNotFoundError(f"Example Franca directory not found: {source_example}")
+        raise FileNotFoundError(f"Preset source project Franca directory not found: {source_project}")
     franca = project_root / "franca"
     franca.mkdir(parents=True, exist_ok=True)
     copied = {"fidl": [], "deployment": []}
@@ -243,12 +238,16 @@ def _franca_files_from_example(
             copied["fidl" if item.suffix == ".fidl" else "deployment"].append(
                 target.relative_to(project_root).as_posix()
             )
+    if not copied["fidl"] or not copied["deployment"]:
+        raise ValueError(f"Preset source project {source_project} does not contain FIDL and FDEPL source")
     return copied
-
 
 def _franca_files_from_preset(
     preset: Dict[str, Any], project_root: Path
 ) -> Dict[str, List[str]]:
+    if preset.get("source_project"):
+        return _franca_files_from_source_project(preset["source_project"], project_root)
+
     franca_source = preset.get("franca") or {}
     franca = project_root / "franca"
     franca.mkdir(parents=True, exist_ok=True)
@@ -264,37 +263,28 @@ def _franca_files_from_preset(
         raise ValueError(f"Preset {preset['id']} does not define FIDL and FDEPL source")
     return written
 
-
 def common_project_id(name: str) -> str:
-    return example_catalog.common_project_id(name)
+    return preset_catalog.common_project_id(name)
 
 
 def create_project(
     project_id: str,
     name: str,
-    source_example: str | None = None,
     preset_id: str | None = None,
 ) -> Dict[str, Any]:
-    preset = (
-        example_catalog.by_id(preset_id)
-        if preset_id
-        else example_catalog.by_source_example(source_example)
-    )
+    preset = preset_catalog.by_id(preset_id)
     if preset is None:
-        requested = preset_id or source_example
+        requested = preset_id or "starter"
         raise FileNotFoundError(f"Unknown project preset: {requested}")
 
-    resolved_source_example = source_example or preset.get("source_example")
     root = _project_dir(project_id)
     if root.exists():
         raise FileExistsError(f"Project already exists: {project_id}")
     for directory in ("franca", "nodes", "scenarios", "generated"):
         (root / directory).mkdir(parents=True, exist_ok=True)
 
-    if preset.get("franca"):
+    if preset.get("franca") or preset.get("source_project"):
         franca = _franca_files_from_preset(preset, root)
-    elif resolved_source_example:
-        franca = _franca_files_from_example(resolved_source_example, root)
     else:
         franca = _starter_franca(root)
 
@@ -329,7 +319,6 @@ def create_project(
     manifest = {
         "id": project_id,
         "name": name,
-        "source_example": resolved_source_example,
         "franca": franca,
         "nodes": nodes,
         "network": {
@@ -342,7 +331,6 @@ def create_project(
     save_manifest(project_id, manifest)
     update_metadata(project_id, created_at=utc_now(), validation={"status": "unknown"})
     return project_detail(project_id)
-
 
 def import_project(source_path: str) -> Dict[str, Any]:
     source = Path(source_path).expanduser().resolve()
@@ -417,9 +405,14 @@ def _scenario_from_preset(root: Path, preset: Dict[str, Any]) -> List[Dict[str, 
     relative_file = scenario.get("file", f"scenarios/{scenario_id}.yaml")
     target = root / relative_file
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(scenario.get("content", "id: smoke\nname: Smoke\nsteps: []\n"))
+    content = scenario.get("content")
+    if content is None and preset.get("source_project") and scenario.get("source_file"):
+        source = WORKSPACE / "projects" / preset["source_project"] / scenario["source_file"]
+        if not source.exists():
+            raise FileNotFoundError(f"Preset scenario source not found: {source}")
+        content = source.read_text()
+    target.write_text(content or "id: smoke\nname: Smoke\nsteps: []\n")
     return [{"id": scenario_id, "file": relative_file}]
-
 
 def list_scenarios(project_id: str) -> List[Dict[str, Any]]:
     root = _project_dir(project_id)

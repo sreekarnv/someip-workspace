@@ -29,7 +29,7 @@ Start with [docs/index.md](docs/index.md) if you are creating or running project
 | Guide | Purpose |
 |-------|---------|
 | [Getting started](docs/getting-started.md) | Setup, startup, and first DoorControl run |
-| [Project creation](docs/project-creation.md) | Source-only versus runnable sample-backed projects |
+| [Project creation](docs/project-creation.md) | Presets, seeded project source, and generated runtime nodes |
 | [Workbench workflow](docs/workbench-workflow.md) | What each UI route does |
 | [Project model](docs/project-model.md) | `project.yaml`, Franca files, scenarios, generated output, and runs |
 | [Authored vs generated](docs/generated-vs-authored.md) | Which files are source, generated, or runtime artifacts |
@@ -71,18 +71,16 @@ The UI is project centered:
 5. Start a saved scenario from Simulate.
 6. Inspect node state, packet capture evidence, Wireshark action, logs, and rendered artifacts from the run inspection route.
 
-DoorControl is the current runnable sample-backed project. Starter and Climate Control are source-only projects: they seed `.fidl`, `.fdepl`, `project.yaml`, nodes, and scenario YAML, then generation creates raw-vsomeip service/client nodes when full CommonAPI Core output is unavailable. See [Project creation](docs/project-creation.md) before adding a new project.
+Starter, DoorControl, and Climate Control are project presets. They seed `.fidl`, `.fdepl`, `project.yaml`, nodes, and scenario YAML, then generation creates raw-vsomeip service/client nodes when full CommonAPI Core output is unavailable. See [Project creation](docs/project-creation.md) before adding a new project.
 
 ## Layout
 
 ```text
 libs/                 COVESA vsomeip and CommonAPI runtime sources
-examples/             C++ sample-backed projects, currently DoorControl
 projects/             Manifest-backed editable workbench projects
 services/api/         FastAPI workflow API
 services/web/         React, Vite, Tailwind, Radix web service
 scripts/              Setup, runtime build, generator download, and API contract scripts
-configs/              Host-process CommonAPI and vsomeip configuration
 docker/               Runtime and Wireshark container definitions
 tools/generators/     Downloaded CommonAPI generator executables
 build/                Generated build output
@@ -129,8 +127,6 @@ pnpm test
 The bundled CommonAPI Core generator output does not include the base Core proxy and stub headers needed for full CommonAPI node implementations. Generation exposes this state as `transport-only`; SOME/IP transport output, generated raw-vsomeip service/client nodes, Docker runs, and packet capture collection can still work. If the Core and SOME/IP generator binaries are identical, the backend skips invalid Core `.fidl` generation and reports a toolchain warning.
 
 Franca scenario `call`, subscription, event, and response assertions remain limited until generated scenario-driver sources implement those actions. The run inspection UI reports that limitation.
-
-The existing manually written CommonAPI DoorControl proxy has a client lifecycle limitation: the service can run correctly while the client exits before a long interactive session. Full generator output or a runtime-side fix is needed for a complete generated client path.
 
 ## Requirements
 

@@ -2165,17 +2165,6 @@
               }
             ],
             "title": "Preset Id"
-          },
-          "source_example": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Source Example"
           }
         },
         "type": "object",
@@ -2208,16 +2197,11 @@
             "type": "string",
             "title": "Name"
           },
-          "source_example": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Source Example"
+          "runtime_kind": {
+            "type": "string",
+            "const": "generated-vsomeip",
+            "title": "Runtime Kind",
+            "default": "generated-vsomeip"
           },
           "status": {
             "$ref": "#/components/schemas/ProjectStatus"
@@ -2768,6 +2752,9 @@
           "docker": {
             "$ref": "#/components/schemas/RuntimeItem"
           },
+          "vsomeip": {
+            "$ref": "#/components/schemas/RuntimeItem"
+          },
           "wireshark": {
             "$ref": "#/components/schemas/WiresharkRuntime"
           },
@@ -2783,6 +2770,7 @@
         "required": [
           "api",
           "docker",
+          "vsomeip",
           "wireshark",
           "generators"
         ],
@@ -2908,17 +2896,6 @@
             "type": "string",
             "title": "Name"
           },
-          "source_example": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Source Example"
-          },
           "description": {
             "anyOf": [
               {
@@ -2939,6 +2916,12 @@
             "type": "boolean",
             "title": "Runnable",
             "default": false
+          },
+          "runtime_kind": {
+            "type": "string",
+            "const": "generated-vsomeip",
+            "title": "Runtime Kind",
+            "default": "generated-vsomeip"
           },
           "default_project_id": {
             "anyOf": [

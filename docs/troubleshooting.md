@@ -36,20 +36,35 @@ franca:
 
 Then confirm the file exists under `projects/<project-id>/franca/`.
 
-## Build Blocked: No `source_example` Fallback
+## Build Blocked: Generated Nodes Missing
 
-This usually means the project has not generated its derived raw-vsomeip node project yet, or the generation output is stale.
+Build needs the generated raw-vsomeip node project created by the Generate step.
 
-Source-only projects do not have checked-in C++ service/client code. Build needs either:
+Check for:
 
-- Generated raw-vsomeip node sources under `projects/<project-id>/generated/nodes/vsomeip`, or
-- A real `source_example` pointing at a buildable directory under `examples/`.
+```text
+projects/<project-id>/generated/nodes/vsomeip/CMakeLists.txt
+```
 
-Do not set `source_example` to a name unless that sample really exists and has buildable code.
+If it is missing, run **Generate** from the Build page. If runtime libraries are missing, run:
+
+```bash
+./scripts/02-build-libs.sh
+```
+
+## Build Artifacts Are Missing
+
+Simulation needs compiled binaries under:
+
+```text
+build/projects/<project-id>/
+```
+
+Run **Build nodes** again. If the project was cleaned manually, generation metadata may still say ready while binaries are gone.
 
 ## Generator Output Is `transport-only`
 
-The current CommonAPI generator path does not provide all Core proxy/stub headers needed for complete generated node builds.
+The current CommonAPI generator path does not provide all Core proxy/stub headers needed for complete generated CommonAPI node builds.
 
 If an old job log says `The file extension should be .fdepl` while running the Core generator, the Core executable was behaving like the SOME/IP deployment generator. Newer generation jobs skip that invalid `.fidl` invocation and report a toolchain warning instead.
 
@@ -58,8 +73,8 @@ What still works:
 - Franca/deployment validation.
 - Interface index generation.
 - SOME/IP transport artifact generation where available.
-- DoorControl sample-backed Docker run path.
-- Source-only raw-vsomeip node builds and Docker runs.
+- Generated raw-vsomeip node builds and Docker runs.
+- Packet capture collection.
 
 What may be blocked:
 
@@ -73,9 +88,12 @@ Open `/projects/<project-id>/simulate` and read the blockers.
 Common causes:
 
 - Validation is not valid.
+- Generation has not produced node sources.
 - Build is not ready.
+- Runtime libraries are missing.
+- Docker is unavailable.
+- Compiled project binaries are missing.
 - The project has no runnable nodes.
-- The project is source-only and Generate/Build has not produced raw-vsomeip binaries yet.
 
 Fix the earliest blocker first. Usually the order is Author, Build, Simulate.
 
@@ -93,12 +111,6 @@ Check these in order:
 8. Check `runs/<run-id>/logs/compose.log` for Docker failures.
 
 If the run failed before containers started, Wireshark will not show SOME/IP traffic.
-
-## DoorControl Client Exits Early
-
-The current DoorControl client path is manually written and has a known lifecycle limitation. The service can run correctly while the client exits earlier than a long interactive session would.
-
-Use run inspection and capture artifacts to confirm whether service discovery and any expected packets occurred.
 
 ## Existing Project Looks Stale After Preset Changes
 

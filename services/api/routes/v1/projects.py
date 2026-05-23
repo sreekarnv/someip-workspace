@@ -33,7 +33,6 @@ async def create_project(request: ProjectCreateRequest):
         project_service.create_project(
             request.project_id,
             request.name,
-            source_example=request.source_example,
             preset_id=request.preset_id,
         )
         return workflow_service.project_overview(request.project_id)

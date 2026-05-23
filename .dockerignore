@@ -7,13 +7,13 @@ AGENTS.md
 services/api/__pycache__/
 services/api/.venv/
 services/api/venv/
-build/examples/*/CMakeFiles/
-build/examples/*/cmake_install.cmake
-build/examples/*/Makefile
-build/examples/*/CMakeCache.txt
 build/vsomeip/CMakeFiles/
 build/capicxx-*/CMakeFiles/
 *.o
 *.log
 captures/
 docker/wireshark-config/
+runs/
+services/web/node_modules/
+services/web/dist/
+**/*.tsbuildinfo

@@ -13,16 +13,16 @@ vi.mock("~/generated/workflow-api", () => ({
         {
           id: "starter",
           name: "Starter",
-          source_example: null,
-          runnable: false,
+          runnable: true,
+          runtime_kind: "generated-vsomeip",
           default_project_id: "sample-lab",
           default_name: "Sample Lab",
         },
         {
           id: "climate-control",
           name: "Climate Control",
-          source_example: null,
-          runnable: false,
+          runnable: true,
+          runtime_kind: "generated-vsomeip",
           default_project_id: "climate-control",
           default_name: "Climate Control",
         },
@@ -72,7 +72,6 @@ describe("ProjectsPage", () => {
         project_id: "climate-control",
         name: "Climate Control",
         preset_id: "starter",
-        source_example: null,
       }),
     );
   });

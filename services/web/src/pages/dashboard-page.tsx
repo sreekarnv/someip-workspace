@@ -115,6 +115,12 @@ export function DashboardPage() {
                   icon={<Box />}
                 />
                 <Ready
+                  label="vsomeip runtime"
+                  ready={overview.runtime.vsomeip.ready}
+                  detail={overview.runtime.vsomeip.detail}
+                  icon={<Cable />}
+                />
+                <Ready
                   label="Core generator"
                   ready={overview.runtime.generators.core.ready}
                   detail={overview.runtime.generators.core.path}

@@ -6,14 +6,12 @@
 libs/                         Trimmed COVESA vsomeip and CommonAPI runtime sources
 build/                        Runtime, example, and generated build output
 tools/generators/             Downloaded CommonAPI generator executables
-examples/DoorControl/         Sample-backed C++ implementation used by door-control
 projects/                     Editable manifest-backed workbench projects
 runs/                         Per-simulation Docker configs, logs, and captures
 services/api/                 FastAPI workflow API
 services/web/                 React/Vite workbench UI
 scripts/                      Setup, runtime build, generator download, and OpenAPI scripts
 docker/                       Runtime image and Wireshark container definitions
-configs/                      Host-side CommonAPI and vsomeip configuration
 docs/                         User workflow documentation and troubleshooting guides
 start-workbench.sh            Single API and web startup entry point
 README.md                     Repository overview with links into docs/
@@ -60,14 +58,14 @@ projects/<project-id>/
   generated/
 ```
 
-- `project.yaml` owns nodes, topology, scenarios, and optional `source_example` fallback metadata.
+- `project.yaml` owns nodes, topology, scenarios, and project intent.
 - Franca `.fidl` files and deployment `.fdepl` files are authored or preset-seeded source. They are not created by validation.
 - Validation reads manifest-listed Franca/deployment files and writes derived metadata such as `generated/interface-index.json`.
 - `build/` and `runs/` are derived output.
 - Create or import projects from the UI unless the task explicitly requires a file-level fixture.
 - Project validation, generation, build, simulation, stop, capture download, and inspection belong to the project workflow, not standalone example scripts.
 
-Project creation has two paths. Source-only projects, such as Starter and Climate Control, create FIDL/FDEPL, manifest nodes, and scenarios with `source_example: null`; generation emits raw-vsomeip service/client node sources so they can build/run SOME/IP traffic without handwritten fallback code. Runnable sample-backed projects, currently DoorControl, use `source_example: DoorControl` and build from `examples/DoorControl`. Do not describe generated raw-vsomeip nodes as complete CommonAPI proxy/stub implementations.
+Project presets such as Starter, DoorControl, and Climate Control create FIDL/FDEPL, manifest nodes, and scenarios. Generation emits raw-vsomeip service/client node sources so projects can build/run SOME/IP traffic without handwritten fallback code. Do not describe generated raw-vsomeip nodes as complete CommonAPI proxy/stub implementations.
 
 ## API Contract
 
@@ -139,7 +137,7 @@ Run `./scripts/check-web-api.sh` when API schemas or web generated endpoints cha
 ## Documentation Notes
 
 - `docs/index.md` is the documentation entry point.
-- `docs/project-creation.md` owns the source-only versus runnable sample-backed explanation.
+- `docs/project-creation.md` owns preset and generated-runtime explanation.
 - `docs/project-model.md` owns manifest and directory semantics.
 - `docs/generated-vs-authored.md` owns authored/generated/runtime artifact boundaries.
 - `docs/troubleshooting.md` owns common user-facing failure messages and fixes.
@@ -150,9 +148,8 @@ Run `./scripts/check-web-api.sh` when API schemas or web generated endpoints cha
 - The bundled generator toolchain can report `transport-only` because complete Core proxy/stub headers are not emitted for fully generated node implementations.
 - If the Core and SOME/IP generator binaries are identical, the backend skips invalid Core `.fidl` generation and logs a toolchain warning instead of surfacing the `.fdepl` extension error to users.
 - SOME/IP transport artifacts, editable node templates, generated raw-vsomeip nodes, Docker runs, and packet capture collection can still exist in that state.
-- Source-only projects build/run through generated raw-vsomeip nodes until complete CommonAPI Core proxy/stub output is available.
+- Projects build/run through generated raw-vsomeip nodes until complete CommonAPI Core proxy/stub output is available.
 - Franca scenario calls, subscriptions, event waits, and response assertions remain limited until generated scenario-driver sources implement them.
-- The sample DoorControl client path still has a manually written CommonAPI proxy lifecycle limitation; do not present it as a complete generated client implementation.
 
 ## Franca And SOME/IP Facts
 

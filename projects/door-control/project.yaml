@@ -1,6 +1,5 @@
 id: door-control
 name: Door Control
-source_example: DoorControl
 franca:
   fidl:
     - franca/DoorControl.fidl

@@ -26,6 +26,7 @@ vi.mock("~/generated/workflow-api", () => ({
       runtime: {
         api: { ready: true },
         docker: { ready: true, detail: "26" },
+        vsomeip: { ready: true, detail: "ready" },
         wireshark: { status: "stopped" },
         generators: {
           core: { ready: true, path: "core" },

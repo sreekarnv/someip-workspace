@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 
-from services import dashboard_service, example_catalog, project_service, simulation_service
+from services import build_service, dashboard_service, docker_manager, preset_catalog, project_service, simulation_service
 
 
 def _readiness(status: Dict[str, str]) -> int:
@@ -46,7 +46,7 @@ def workbench_overview() -> Dict[str, Any]:
 def project_collection() -> Dict[str, Any]:
     return {
         "projects": project_service.list_projects(),
-        "presets": example_catalog.public_presets(),
+        "presets": preset_catalog.public_presets(),
     }
 
 
@@ -125,7 +125,7 @@ def project_overview(project_id: str) -> Dict[str, Any]:
     return {
         "id": manifest["id"],
         "name": manifest.get("name", manifest["id"]),
-        "source_example": manifest.get("source_example"),
+        "runtime_kind": "generated-vsomeip",
         "status": status,
         "readiness": _readiness(status),
         "readiness_gates": _readiness_gates(status),
@@ -199,10 +199,30 @@ def _simulation_blockers(
                 "message": "Validate the project before starting a run.",
             }
         )
+    if status["generation"] not in {"ready", "transport-only"}:
+        blockers.append(
+            {
+                "id": "generation",
+                "message": "Generate project artifacts before building or simulating.",
+            }
+        )
+    runtime = build_service.runtime_readiness()
+    if not runtime["ready"]:
+        blockers.append({"id": "runtime", "message": runtime["detail"]})
     if status["build"] != "ready":
         blockers.append(
-            {"id": "build", "message": "Build runnable nodes before starting a run."}
+            {"id": "build", "message": "Build runnable generated nodes before starting a run."}
         )
+    elif not simulation_service.project_binaries_ready(project_id):
+        blockers.append(
+            {
+                "id": "artifacts",
+                "message": "Build artifacts are missing under build/projects; run Build nodes again.",
+            }
+        )
+    docker_state = docker_manager.docker_ready()
+    if not docker_state["ready"]:
+        blockers.append({"id": "docker", "message": f"Docker is not ready: {docker_state['detail']}"})
     if not manifest.get("nodes"):
         blockers.append(
             {"id": "nodes", "message": "The project manifest has no runnable nodes."}

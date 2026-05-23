@@ -157,7 +157,7 @@ def _write_node_scaffolds(root: Path, manifest: dict) -> None:
                 f"# {node['id']} {node_kind} template\n\n"
                 f"Generated for `{interface_name or node.get('interface', 'unknown interface')}`.\n"
                 "Place editable CommonAPI handler or client driver sources in `../src/`.\n"
-                "Runnable sample-backed projects may build from `source_example`; source-only projects need generated node sources before build/run can succeed.\n"
+                "The project build uses generated raw-vsomeip nodes until full CommonAPI proxy/stub output is available.\n"
             )
 
 
