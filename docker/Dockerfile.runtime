@@ -1,0 +1,27 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    libboost-system1.83.0 \
+    libboost-thread1.83.0 \
+    libboost-log1.83.0 \
+    libboost-program-options1.83.0 \
+    libboost-filesystem1.83.0 \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY build/install/ /opt/install/
+COPY build/vsomeip/lib*.so* /opt/vsomeip/
+
+ENV LD_LIBRARY_PATH=/opt/install/lib:/opt/install/install/usr/local/lib:/opt/install/usr/local/lib:/opt/vsomeip
+ENV COMMONAPI_DEFAULT_BINDING=someip
+ENV COMMONAPI_DEFAULT_FOLDER=/opt/install/lib
+ENV VSOMEIP_CONFIGURATION=/app/vsomeip.json
+
+WORKDIR /app
+
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

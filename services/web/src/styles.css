@@ -1,0 +1,101 @@
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Azeret+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --color-background: #f5f7f4;
+  --color-foreground: #162124;
+  --color-card: rgba(252, 253, 250, 0.94);
+  --color-popover: #fff;
+  --color-popover-foreground: #162124;
+  --color-muted: #e7ece6;
+  --color-muted-foreground: #56666a;
+  --color-border: #c7d2cd;
+  --color-primary: #11635a;
+  --color-primary-foreground: #f5fffb;
+  --color-accent: #236fa1;
+  --color-destructive: #b13e43;
+  --color-ring: #236fa1;
+  --color-shell: #122426;
+  --color-shell-muted: #bed0ce;
+  --color-shell-line: #375b5e;
+  --font-sans: "Atkinson Hyperlegible", "Segoe UI", sans-serif;
+  --font-display: "Instrument Serif", Georgia, serif;
+  --font-mono: "Azeret Mono", "Cascadia Mono", monospace;
+  --shadow-bench:
+    0 1px 0 rgba(255, 255, 255, 0.75) inset, 0 18px 42px rgba(13, 35, 38, 0.08);
+  --shadow-shell: 0 24px 70px rgba(9, 21, 23, 0.18);
+}
+
+:root {
+  background: #f5f7f4;
+  color: #162124;
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  letter-spacing: 0;
+  text-rendering: optimizeLegibility;
+}
+* {
+  box-sizing: border-box;
+  letter-spacing: 0;
+}
+body {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.92),
+      rgba(245, 247, 244, 0.72) 18rem
+    ),
+    #f5f7f4;
+  margin: 0;
+  min-width: 320px;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button,
+input,
+textarea {
+  font: inherit;
+}
+code,
+pre {
+  font-family: var(--font-mono);
+}
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+h1 {
+  color: var(--color-foreground);
+  font: 400 3.4rem/0.96 var(--font-display);
+  margin-bottom: 0;
+}
+h2 {
+  color: var(--color-foreground);
+  font: 700 1.5rem/1.15 var(--font-sans);
+  margin-bottom: 0;
+}
+h3 {
+  font-size: 1rem;
+  margin-bottom: 0.65rem;
+}
+p {
+  color: var(--color-muted-foreground);
+}
+pre {
+  background: #102022;
+  border: 1px solid #375b5e;
+  border-radius: 8px;
+  color: #e8f2ef;
+  margin: 0;
+  max-width: 100%;
+  min-height: 13rem;
+  overflow: auto;
+  padding: 1rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

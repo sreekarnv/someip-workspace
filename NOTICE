@@ -1,0 +1,16 @@
+SOME/IP Workspace
+Copyright 2026 SOME/IP Workspace contributors
+
+The original workbench code in this repository is licensed under the
+Apache License, Version 2.0, except where a file or directory carries
+another license notice.
+
+This repository includes and interoperates with COVESA projects,
+including vsomeip and CommonAPI runtimes and generator tooling.
+Source files under `libs/vsomeip`, `libs/capicxx-core-runtime`, and
+`libs/capicxx-someip-runtime` retain their upstream notices and license
+files. They are not relicensed by the top-level Apache License.
+
+CommonAPI-generated files that carry Mozilla Public License 2.0 notices
+retain those notices. Other downloaded packages, container images, and
+toolchains retain their own license terms.

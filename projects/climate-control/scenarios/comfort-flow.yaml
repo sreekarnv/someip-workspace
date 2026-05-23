@@ -1,0 +1,20 @@
+id: comfort-flow
+name: Comfort Flow
+steps:
+  - start: climate-service
+  - wait_for:
+      service: v1.vehicle.climate.ClimateControl
+      timeout_ms: 5000
+  - start: climate-client
+  - call:
+      node: climate-client
+      method: setTargetTemperature
+      args:
+        targetTemperatureC: 21
+  - call:
+      node: climate-client
+      method: setFanLevel
+      args:
+        level: 3
+  - capture_mark:
+      label: climate-comfort-ready

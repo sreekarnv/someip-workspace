@@ -1,0 +1,30 @@
+package v1.vehicle.climate
+
+interface ClimateControl {
+
+    version { major 1 minor 0 }
+
+    struct ClimateStatus {
+        Int16 targetTemperatureC
+        UInt8 fanLevel
+        Boolean airConditioning
+    }
+
+    method setTargetTemperature {
+        in { Int16 targetTemperatureC }
+        out { Boolean accepted }
+    }
+
+    method setFanLevel {
+        in { UInt8 level }
+        out { Boolean accepted }
+    }
+
+    method getClimateStatus {
+        out { ClimateStatus status }
+    }
+
+    broadcast onClimateStatusChanged {
+        out { ClimateStatus status }
+    }
+}

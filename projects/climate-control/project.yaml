@@ -1,0 +1,24 @@
+id: climate-control
+name: Climate Control
+source_example: null
+franca:
+  fidl:
+  - franca/ClimateControl.fidl
+  deployment:
+  - franca/ClimateControl.fdepl
+nodes:
+- id: climate-service
+  type: service
+  interface: v1.vehicle.climate.ClimateControl
+  app_name: climate-control-service
+- id: climate-client
+  type: client
+  interface: v1.vehicle.climate.ClimateControl
+  app_name: climate-control-client
+network:
+  service_discovery: true
+  multicast: 224.224.224.245
+  sd_port: 30490
+scenarios:
+- id: comfort-flow
+  file: scenarios/comfort-flow.yaml

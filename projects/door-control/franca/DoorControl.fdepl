@@ -1,0 +1,34 @@
+import "platform:/plugin/org.genivi.commonapi.someip/deployment/CommonAPI-SOMEIP_deployment_spec.fdepl"
+import "DoorControl.fidl"
+
+define org.genivi.commonapi.someip.deployment for interface v1.vehicle.doors.DoorControl {
+    SomeIpServiceID = 4097
+
+    method lockAllDoors {
+        SomeIpMethodID = 256
+    }
+
+    method unlockDoor {
+        SomeIpMethodID = 257
+    }
+
+    method getDoorStatus {
+        SomeIpMethodID = 258
+    }
+
+    method getAllDoorStatus {
+        SomeIpMethodID = 259
+    }
+
+    broadcast onDoorStateChanged {
+        SomeIpEventID = 32769
+        SomeIpEventGroups = { 1 }
+    }
+}
+
+define org.genivi.commonapi.someip.deployment for provider as DoorControlService {
+    instance v1.vehicle.doors.DoorControl {
+        InstanceId = "vehicle.doors.DoorControl"
+        SomeIpInstanceID = 1
+    }
+}

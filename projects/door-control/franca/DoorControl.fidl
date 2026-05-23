@@ -1,0 +1,66 @@
+package v1.vehicle.doors
+
+interface DoorControl {
+
+    version { 
+      major 1
+      minor 0 
+    }
+
+    enumeration DoorPosition {
+        FRONT_LEFT
+        FRONT_RIGHT
+        REAR_LEFT
+        REAR_RIGHT
+    }
+
+    enumeration DoorState {
+        LOCKED
+        UNLOCKED
+        OPEN
+        CLOSED
+        JAMMED
+    }
+
+    struct DoorStatus {
+        DoorState doorState
+        Boolean childLock
+        UInt8 windowPercent
+    }
+
+    method lockAllDoors {
+    }
+
+    method unlockDoor {
+        in {
+            DoorPosition door
+        }
+        out {
+            Boolean success
+        }
+    }
+
+    method getDoorStatus {
+        in {
+            DoorPosition door
+        }
+        out {
+            DoorStatus status
+        }
+    }
+
+    array DoorStatusArray of DoorStatus
+
+    method getAllDoorStatus {
+        out {
+            DoorStatusArray allDoors
+        }
+    }
+
+    broadcast onDoorStateChanged {
+        out {
+            DoorPosition door
+            DoorStatus status
+        }
+    }
+}

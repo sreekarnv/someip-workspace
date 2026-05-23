@@ -1,0 +1,30 @@
+import "platform:/plugin/org.genivi.commonapi.someip/deployment/CommonAPI-SOMEIP_deployment_spec.fdepl"
+import "ClimateControl.fidl"
+
+define org.genivi.commonapi.someip.deployment for interface v1.vehicle.climate.ClimateControl {
+    SomeIpServiceID = 4353
+
+    method setTargetTemperature {
+        SomeIpMethodID = 256
+    }
+
+    method setFanLevel {
+        SomeIpMethodID = 257
+    }
+
+    method getClimateStatus {
+        SomeIpMethodID = 258
+    }
+
+    broadcast onClimateStatusChanged {
+        SomeIpEventID = 32769
+        SomeIpEventGroups = { 1 }
+    }
+}
+
+define org.genivi.commonapi.someip.deployment for provider as ClimateControlService {
+    instance v1.vehicle.climate.ClimateControl {
+        InstanceId = "vehicle.climate.ClimateControl"
+        SomeIpInstanceID = 1
+    }
+}

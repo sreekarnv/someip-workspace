@@ -1,0 +1,13 @@
+ARG RUNTIME_IMAGE=someip-runtime:latest
+FROM ${RUNTIME_IMAGE}
+
+ARG PROJECT_ID
+ENV PROJECT_ID=${PROJECT_ID}
+
+RUN apt-get update && apt-get install -y iproute2 jq && rm -rf /var/lib/apt/lists/*
+
+COPY build/projects/${PROJECT_ID}/ /tmp/project-build/
+RUN set -e;     cp /tmp/project-build/*_service /tmp/project-build/*_client /app/;     chmod +x /app/*_service /app/*_client
+
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh

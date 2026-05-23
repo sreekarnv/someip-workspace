@@ -1,0 +1,18 @@
+services:
+  dc-wireshark:
+    image: lscr.io/linuxserver/wireshark:latest
+    container_name: dc-wireshark
+    cap_add:
+      - NET_ADMIN
+    # Capture from the host namespace so the Docker bridge's unicast traffic is visible.
+    network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+    volumes:
+      - ./wireshark-config:/config
+      # Keep run snapshots visible from Wireshark's file browser.
+      - ../runs:/captures:ro
+    shm_size: "1gb"
+    restart: unless-stopped

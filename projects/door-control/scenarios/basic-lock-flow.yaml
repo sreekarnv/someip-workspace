@@ -1,0 +1,18 @@
+id: basic-lock-flow
+name: Basic Lock Flow
+steps:
+  - start: door-service
+  - wait_for:
+      service: v1.vehicle.doors.DoorControl
+      timeout_ms: 5000
+  - start: door-client
+  - call:
+      node: door-client
+      method: unlockDoor
+      args:
+        door: FRONT_LEFT
+  - assert:
+      response:
+        success: true
+  - capture_mark:
+      label: unlock-complete

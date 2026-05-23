@@ -1,0 +1,80 @@
+# Build artifacts
+build/
+*.o
+*.so
+*.a
+*.dylib
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+.venv/
+venv/
+env/
+
+# Frontend dependencies and compiler state
+node_modules/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git metadata from imported source trees
+**/.git/
+**/.gitmodules
+**/.gitattributes
+**/.gitkeep
+**/.gitignore
+!/.gitignore
+
+# Logs
+*.log
+logs/
+docker/wireshark-config/
+docker/docker/
+runs/
+
+# Temporary
+/tmp/
+*.tmp
+*.bak
+
+# Generated artifacts. Source-only projects regenerate raw-vsomeip nodes under
+# projects/<project-id>/generated/ during Generate. Keep the DoorControl fallback
+# artifacts that a clean checkout cannot reproduce with the bundled transport-only
+# generator output.
+examples/*/gen/
+!examples/DoorControl/gen/
+!examples/DoorControl/gen/**
+projects/*/generated/
+
+# vsomeip runtime sockets
+/tmp/vsomeip-*
+
+# Maven
+target/
+*.class
+*.jar
+
+# Libraries (use git submodules or run 01-setup.sh)
+libs/
+
+# Generators (run 03-download-generators.sh)
+tools/generators/
+tools/*.zip

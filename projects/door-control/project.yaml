@@ -1,0 +1,24 @@
+id: door-control
+name: Door Control
+source_example: DoorControl
+franca:
+  fidl:
+    - franca/DoorControl.fidl
+  deployment:
+    - franca/DoorControl.fdepl
+nodes:
+  - id: door-service
+    type: service
+    interface: v1.vehicle.doors.DoorControl
+    app_name: door-control-service
+  - id: door-client
+    type: client
+    interface: v1.vehicle.doors.DoorControl
+    app_name: door-control-client
+network:
+  service_discovery: true
+  multicast: 224.224.224.245
+  sd_port: 30490
+scenarios:
+  - id: basic-lock-flow
+    file: scenarios/basic-lock-flow.yaml

@@ -1,0 +1,15 @@
+ARG RUNTIME_IMAGE=someip-runtime:latest
+FROM ${RUNTIME_IMAGE}
+
+ARG EXAMPLE_NAME
+ENV EXAMPLE_NAME=${EXAMPLE_NAME}
+
+RUN apt-get update && apt-get install -y iproute2 jq && rm -rf /var/lib/apt/lists/*
+
+COPY build/examples/ /tmp/build-examples/
+RUN set -e;     example_dir="/tmp/build-examples/${EXAMPLE_NAME}";     if [ ! -d "$example_dir" ]; then         lower_name="$(printf '%s' "${EXAMPLE_NAME}" | tr '[:upper:]' '[:lower:]')";         example_dir="/tmp/build-examples/${lower_name}";     fi;     if [ ! -d "$example_dir" ]; then         echo "Build output for example ${EXAMPLE_NAME} was not found" >&2;         find /tmp/build-examples -maxdepth 2 -type f >&2;         exit 1;     fi;     cp "$example_dir"/*_service "$example_dir"/*_client /app/
+
+RUN chmod +x /app/*_service /app/*_client
+
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
